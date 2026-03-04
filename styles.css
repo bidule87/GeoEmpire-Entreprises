@@ -1,0 +1,112 @@
+.ecran {
+    display: none;
+}
+
+.ecran.actif {
+    display: block;
+}
+/* Style global */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background: #0d0d0d;
+    color: white;
+    text-align: center;
+}
+
+/* Écrans */
+.ecran {
+    display: none;
+    padding: 20px;
+}
+
+.ecran.actif {
+    display: block;
+}
+/* Titres */
+h1, h2 {
+    margin-bottom: 20px;
+    color: #00c8ff;
+    text-shadow: 0 0 10px #00c8ff;
+}
+
+/* Boutons */
+.btn, .btn-retour {
+    display: block;
+    width: 200px;
+    margin: 10px auto;
+    padding: 12px;
+    font-size: 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: #1a1a1a;
+    color: white;
+    transition: 0.2s;
+    box-shadow: 0 0 10px #00c8ff;
+}
+
+.btn:hover, .btn-retour:hover {
+    background: #00c8ff;
+    color: black;
+}
+
+/* Conteneurs des modules */
+#contenu-bilan,
+#contenu-tresorerie,
+#contenu-immobilisation,
+#contenu-roles {
+    margin-top: 20px;
+    padding: 15px;
+    background: #111;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #00c8ff;
+}
+.point-marketing {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.point-rouge { background: #e53935; }
+.point-orange { background: #fb8c00; }
+.point-jaune { background: #fdd835; }
+.point-vert_clair { background: #66bb6a; }
+.point-vert_fonce { background: #2e7d32; }
+.point-bleu { background: #1e88e5; }
+.bloc-primes {
+    background: #1a1a1a;
+    border: 2px solid #444;
+    border-radius: 10px;
+    padding: 20px;
+    margin-top: 30px;
+    box-shadow: 0 0 10px #000;
+}
+
+.bloc-primes h3 {
+    margin-top: 0;
+    color: gold;
+    text-align: center;
+}
+
+.bloc-primes input,
+.bloc-primes select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0 15px 0;
+    border-radius: 6px;
+    border: 1px solid #555;
+    background: #222;
+    color: white;
+}
+
+#historique-primes {
+    margin-top: 20px;
+    padding: 10px;
+    background: #111;
+    border-radius: 6px;
+    border: 1px solid #333;
+    color: #ccc;
+}

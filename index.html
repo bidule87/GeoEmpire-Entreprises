@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Geo Empire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        body {
+            background:#0d0d0d;
+            color:white;
+            font-family:Arial, sans-serif;
+            margin:0;
+            padding:0;
+        }
+
+        header {
+            background:#111;
+            padding:15px;
+            text-align:center;
+            font-size:22px;
+            font-weight:bold;
+            border-bottom:2px solid #333;
+        }
+
+        nav {
+            display:flex;
+            background:#1a1a1a;
+            border-bottom:2px solid #333;
+        }
+
+        nav button {
+            flex:1;
+            padding:12px;
+            background:#1a1a1a;
+            color:white;
+            border:none;
+            cursor:pointer;
+            font-size:16px;
+        }
+
+        nav button:hover {
+            background:#333;
+        }
+
+        .ecran {
+            display:none;
+            padding:20px;
+        }
+
+        .actif {
+            display:block;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>Geo Empire</header>
+
+<nav>
+    <button onclick="ouvrirModule('module-immobilisation')">Immobilisations</button>
+    <button onclick="ouvrirModule('module-entreprise')">Entreprise</button>
+    <button onclick="ouvrirModule('module-joueur')">Joueur</button>
+</nav>
+
+<!-- =============================== -->
+<!-- MODULE IMMOBILISATIONS -->
+<!-- =============================== -->
+<div id="module-immobilisation" class="ecran">
+    <h2>Immobilisations</h2>
+    <div id="contenu-immobilisation"></div>
+</div>
+
+<!-- =============================== -->
+<!-- MODULE ENTREPRISE -->
+<!-- =============================== -->
+<div id="module-entreprise" class="ecran">
+    <h2>Entreprise</h2>
+    <div id="contenu-entreprise"></div>
+</div>
+
+<!-- =============================== -->
+<!-- MODULE JOUEUR -->
+<!-- =============================== -->
+<div id="module-joueur" class="ecran">
+    <h2>Informations joueur</h2>
+    <div id="contenu-joueur"></div>
+</div>
+
+<script>
+    function ouvrirModule(id) {
+        document.querySelectorAll('.ecran').forEach(e => e.classList.remove('actif'));
+        document.getElementById(id).classList.add('actif');
+
+        if (id === "module-immobilisation") afficherImmobilisations();
+    }
+</script>
+
+<!-- =============================== -->
+<!-- IMPORTS JS -->
+<!-- =============================== -->
+
+<script src="js/entreprise/immobilisation.js"></script>
+<script src="js/entreprise/systeme_patrimoine.js"></script>
+<script src="js/entreprise/systeme_roles.js"></script>
+<script src="js/entreprise/systeme_actionnaires.js"></script>
+<script src="js/entreprise/systeme_primes.js"></script>
+<script src="js/entreprise/systeme_gtoken.js"></script>
+<script src="js/systeme.js"></script>
+
+</body>
+</html>
