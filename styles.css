@@ -1,72 +1,139 @@
-.ecran {
-    display: none;
-}
+/* ===============================
+   STYLE GLOBAL
+   =============================== */
 
-.ecran.actif {
-    display: block;
-}
-/* Style global */
 body {
     margin: 0;
     padding: 0;
+    background: #000;
+    color: #00c8ff;
     font-family: Arial, sans-serif;
-    background: #0d0d0d;
-    color: white;
     text-align: center;
 }
 
-/* Écrans */
-.ecran {
-    display: none;
-    padding: 20px;
-}
-
-.ecran.actif {
-    display: block;
-}
-/* Titres */
-h1, h2 {
-    margin-bottom: 20px;
+h1 {
+    margin-top: 25px;
+    font-size: 32px;
     color: #00c8ff;
-    text-shadow: 0 0 10px #00c8ff;
+    text-shadow: 0 0 12px #0099ff;
 }
 
-/* Boutons */
-.btn, .btn-retour {
-    display: block;
-    width: 200px;
-    margin: 10px auto;
-    padding: 12px;
+h2, h3 {
+    color: #00c8ff;
+    text-shadow: 0 0 8px #0099ff;
+}
+
+
+/* ===============================
+   MENU PRINCIPAL
+   =============================== */
+
+.menu {
+    margin-top: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 260px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.menu-btn {
+    padding: 14px;
     font-size: 18px;
-    border: none;
-    border-radius: 8px;
+    background: #001a33;
+    color: #00c8ff;
+    border: 2px solid #004466;
+    border-radius: 6px;
     cursor: pointer;
-    background: #1a1a1a;
-    color: white;
     transition: 0.2s;
-    box-shadow: 0 0 10px #00c8ff;
+    box-shadow: 0 0 10px #003355;
 }
 
-.btn:hover, .btn-retour:hover {
-    background: #00c8ff;
-    color: black;
+.menu-btn:hover {
+    background: #003355;
+    color: #33ccff;
+    border-color: #0099ff;
 }
 
-/* Conteneurs des modules */
-#contenu-bilan,
-#contenu-tresorerie,
-#contenu-immobilisation,
-#contenu-roles {
-    margin-top: 20px;
-    padding: 15px;
-    background: #111;
+.menu-actif {
+    background: #004466 !important;
+    color: #66e0ff !important;
+    border-color: #00ccff !important;
+    box-shadow: 0 0 15px #00ccff;
+}
+
+
+/* ===============================
+   PAGES / ÉCRANS
+   =============================== */
+
+.page {
+    display: none;
+    margin-top: 35px;
+    padding: 20px;
+    width: 90%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #0a0a0a;
     border-radius: 10px;
-    box-shadow: 0 0 10px #00c8ff;
+    border: 1px solid #003355;
+    box-shadow: 0 0 15px #003355;
 }
+
+.page.active {
+    display: block;
+}
+
+
+/* ===============================
+   BOUTONS GÉNÉRIQUES
+   =============================== */
+
+button {
+    cursor: pointer;
+}
+
+.btn {
+    padding: 12px 20px;
+    background: #001a33;
+    color: #00c8ff;
+    border: 2px solid #004466;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: 0.2s;
+}
+
+.btn:hover {
+    background: #003355;
+    color: #33ccff;
+    border-color: #0099ff;
+}
+
+
+/* ===============================
+   BLOCS DE CONTENU
+   =============================== */
+
+.bloc {
+    background: #111;
+    padding: 15px;
+    border-radius: 10px;
+    border: 1px solid #003355;
+    box-shadow: 0 0 10px #003355;
+    margin-bottom: 20px;
+}
+
+
+/* ===============================
+   MARKETING (points de couleur)
+   =============================== */
+
 .point-marketing {
     display: inline-block;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
 }
 
@@ -76,19 +143,25 @@ h1, h2 {
 .point-vert_clair { background: #66bb6a; }
 .point-vert_fonce { background: #2e7d32; }
 .point-bleu { background: #1e88e5; }
+
+
+/* ===============================
+   PRIMES
+   =============================== */
+
 .bloc-primes {
     background: #1a1a1a;
-    border: 2px solid #444;
+    border: 2px solid #004466;
     border-radius: 10px;
     padding: 20px;
     margin-top: 30px;
-    box-shadow: 0 0 10px #000;
+    box-shadow: 0 0 12px #003355;
 }
 
 .bloc-primes h3 {
     margin-top: 0;
     color: gold;
-    text-align: center;
+    text-shadow: 0 0 10px gold;
 }
 
 .bloc-primes input,
@@ -109,4 +182,44 @@ h1, h2 {
     border-radius: 6px;
     border: 1px solid #333;
     color: #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+
+/* ===============================
+   BOUTIQUE
+   =============================== */
+
+.pack-item {
+    background: #001a33;
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #004466;
+    border-radius: 6px;
+    box-shadow: 0 0 10px #003355;
+}
+
+.pack-item h3 {
+    color: #00ffaa;
+    text-shadow: 0 0 8px #00ffaa;
+}
+
+.pack-item button {
+    margin-top: 10px;
+}
+
+
+/* ===============================
+   RESPONSIVE
+   =============================== */
+
+@media (max-width: 600px) {
+    .menu {
+        width: 90%;
+    }
+
+    .page {
+        width: 95%;
+    }
 }

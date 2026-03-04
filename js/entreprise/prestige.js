@@ -2,7 +2,6 @@
 // MODULE PRESTIGE GEO EMPIRE
 // ===============================
 
-// Active le pack prestige
 function activerPrestige() {
     if (entreprise.prestige) {
         alert("Le Pack Prestige est déjà activé.");
@@ -11,26 +10,26 @@ function activerPrestige() {
 
     entreprise.prestige = true;
 
-    // Bonus immédiats
-    entreprise.tresorerie += 100000; // +100k G-Tokens
-    if (!entreprise.crowns) entreprise.crowns = 0;
-    entreprise.crowns += 10; // +10 Crowns
+    // BONUS EXACTS DU PACK PRESTIGE (selon ta capture)
+    entreprise.gpsRadius = 20;               // Rayon GPS 20 km
+    entreprise.achatsIllimités = true;       // Achats illimités
+    entreprise.assuranceSpeciale = true;     // Assurance spéciale
+    entreprise.prioriteAchat = true;         // Priorité absolue
+    entreprise.actionsDeMasse = true;        // Achat/vente/location en masse
+    entreprise.exportExcel = true;           // Export Excel / Sheets
+    entreprise.bonusMoletteVente = true;     // Bonus vente via molette
+    entreprise.bonusMoletteLocation = true;  // Bonus location via molette
 
-    // Bonus marketing automatique
-    marketing.couleur = "bleu"; // meilleur niveau
+    // G-Tokens + Crowns
+    entreprise.gTokens = (entreprise.gTokens || 0) + 10000;
+    entreprise.crowns = (entreprise.crowns || 0) + 10;
+
+    // +9 capacités sur toutes les entités
+    entreprise.capaciteEntites = (entreprise.capaciteEntites || 0) + 9;
+
+    // Statut PDG / actionnaires
+    entreprise.statutPrestige = "PDG";
 
     alert("Pack Prestige activé !");
     afficherEntreprise();
-}
-
-
-// Bonus appliqués automatiquement dans le système
-function bonusPrestigeVenteLocation(baseProba) {
-    if (!entreprise.prestige) return baseProba;
-    return Math.min(1, baseProba + 0.10); // +10% chance de vente/location
-}
-
-function bonusPrestigeValeur(bien, valeur) {
-    if (!entreprise.prestige) return valeur;
-    return Math.round(valeur * 1.05); // +5% valeur
 }

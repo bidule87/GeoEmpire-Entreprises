@@ -1,22 +1,53 @@
 // ===============================
-// ACTIONNAIRES
+// SYSTÈME ACTIONNAIRES GEO EMPIRE
+// ===============================
+//
+// Chaque holding possède :
+// - une liste d'actionnaires
+// - chaque actionnaire = { joueur, pourcentage }
+//
+// Lorsqu'une filiale est créée, elle copie les actionnaires de la holding.
 // ===============================
 
-// Quand une holding crée une filiale → copie les actionnaires
-function creerFiliale(holding, nom) {
+
+// ===============================
+// CRÉATION D'UNE FILIALE AVEC ACTIONNAIRES
+// ===============================
+
+function ge_creerFilialeAvecActionnaires(holding, nom) {
     return {
-        nom,
-        actionnaires: [...holding.actionnaires],
-        roles: { PDG: holding.PDG, COMPTABLE: null, DG: null, DC: null },
-        biens: [],
-        tresorerie: 0
+        id: Date.now(),
+        nom: nom,
+        tresorerie: 0,
+        valeur: 0,
+
+        // Copie des actionnaires de la holding
+        actionnaires: holding.actionnaires ? [...holding.actionnaires] : [],
+
+        // Rôles internes
+        roles: {
+            PDG: holding.PDG || null,
+            DirecteurGeneral: null,
+            DirecteurCommercial: null,
+            Comptable: null
+        },
+
+        biens: []
     };
 }
 
-// Répartition des gains G-Token selon les parts
-function distribuerGTokens(holding, montant) {
+
+// ===============================
+// DISTRIBUTION DES G-TOKENS SELON LES PARTS
+// ===============================
+
+function ge_distribuerGTokens(holding, montant) {
+    if (!holding.actionnaires) return;
+
     holding.actionnaires.forEach(a => {
         const part = a.pourcentage / 100;
-        a.joueur.gtoken += montant * part;
+
+        // Ajout des G-Tokens au joueur
+        a.joueur.gTokens = (a.joueur.gTokens || 0) + Math.floor(montant * part);
     });
 }

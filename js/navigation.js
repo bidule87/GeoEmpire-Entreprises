@@ -1,29 +1,118 @@
 // ===============================
-// OUVERTURE DES MODULES
+// NAVIGATION GEO EMPIRE
+// ===============================
+//
+// Gère l'affichage des pages :
+// - Trésorerie
+// - Entreprises
+// - Holdings
+// - Conglomérats
+// - Rôles
+// - Boutique
+// - Loterie
+//
+// Compatible avec tous les modules PRO
 // ===============================
 
-function ouvrirModule(nom) {
 
-    // Masquer tous les écrans
-    document.querySelectorAll('.ecran').forEach(e => e.classList.remove("actif"));
+// ===============================
+// LISTE DES PAGES
+// ===============================
 
-    // Afficher le bon module
-    const module = document.getElementById("module-" + nom);
-    if (module) module.classList.add("actif");
+const GE_PAGES = {
+    tresorerie: "contenu-tresorerie",
+    entreprises: "contenu-entreprises",
+    holdings: "contenu-holdings",
+    conglom: "contenu-conglom",
+    roles: "contenu-roles",
+    boutique: "contenu-boutique",
+    loterie: "contenu-loterie"
+};
 
-    // Appels d'affichage selon le module
-    if (nom === "entreprises") ge_afficherStructures();
-    if (nom === "immobilisation") afficherImmobilisations();
-    if (nom === "bilan") afficherBilan();
-    if (nom === "tresorerie") ge_afficherTresorerie();
-    if (nom === "roles") afficherRoles();
+
+// ===============================
+// MASQUER TOUTES LES PAGES
+// ===============================
+
+function ge_cacherToutesLesPages() {
+    Object.values(GE_PAGES).forEach(id => {
+        const zone = document.getElementById(id);
+        if (zone) zone.style.display = "none";
+    });
 }
 
+
 // ===============================
-// RETOUR AU MENU
+// AFFICHER UNE PAGE
 // ===============================
 
-function retourMenu() {
-    document.querySelectorAll('.ecran').forEach(e => e.classList.remove("actif"));
-    document.getElementById('menu-principal').classList.add('actif');
+function ge_afficherPage(page) {
+    ge_cacherToutesLesPages();
+
+    const id = GE_PAGES[page];
+    const zone = document.getElementById(id);
+
+    if (!zone) {
+        console.warn("Page inconnue :", page);
+        return;
+    }
+
+    zone.style.display = "block";
+
+    // Chargement automatique des modules
+    switch (page) {
+
+        case "tresorerie":
+            if (typeof ge_afficherTresorerie === "function") ge_afficherTresorerie();
+            break;
+
+        case "entreprises":
+            if (typeof ge_afficherStructures === "function") ge_afficherStructures();
+            break;
+
+        case "roles":
+            if (typeof afficherRoles === "function") afficherRoles();
+            break;
+
+        case "boutique":
+            if (typeof afficherBoutique === "function") afficherBoutique();
+            break;
+
+        case "loterie":
+            if (typeof ge_afficherLoterie === "function") ge_afficherLoterie();
+            break;
+    }
 }
+
+
+// ===============================
+// ACTIVER UN BOUTON DU MENU
+// ===============================
+
+function ge_activerBoutonMenu(btnId) {
+    document.querySelectorAll(".menu-btn").forEach(btn => {
+        btn.classList.remove("menu-actif");
+    });
+
+    const btn = document.getElementById(btnId);
+    if (btn) btn.classList.add("menu-actif");
+}
+
+
+// ===============================
+// NAVIGATION PRINCIPALE
+// ===============================
+
+function ge_naviguer(page, boutonId = null) {
+    ge_afficherPage(page);
+    if (boutonId) ge_activerBoutonMenu(boutonId);
+}
+
+
+// ===============================
+// CHARGEMENT INITIAL
+// ===============================
+
+document.addEventListener("DOMContentLoaded", () => {
+    ge_naviguer("tresorerie", "btn-tresorerie");
+});

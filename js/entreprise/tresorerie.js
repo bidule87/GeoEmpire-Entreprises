@@ -1,17 +1,35 @@
 // ===============================
-// MODULE TRÉSORERIE
+// MODULE TRÉSORERIE GEO EMPIRE
+// ===============================
+//
+// Affiche :
+// - trésorerie
+// - gain journalier
+// - bénéfice hebdo
+// - marketing
+// - primes
+//
+// Compatible avec :
+// - Auto-Manager
+// - Holdings / Entreprises / Conglomérats
+// - Système de primes PRO
 // ===============================
 
-function afficherTresorerie() {
-    const cont = document.getElementById("contenu-tresorerie");
-    cont.innerHTML = "";
 
-    const treso = entreprise.tresorerie;
+// ===============================
+// AFFICHAGE TRÉSORERIE
+// ===============================
+
+function ge_afficherTresorerie() {
+    const cont = document.getElementById("contenu-tresorerie");
+    if (!cont) return;
+
+    const treso = entreprise.tresorerie || 0;
     const gainJour = estimerGainJournalier();
-    const benefHebdo = entreprise.beneficeSemaine;
+    const benefHebdo = entreprise.beneficeSemaine || 0;
 
     cont.innerHTML = `
-        <h2>Trésorerie</h2>
+        <h2 style="color:#00aaff;">Trésorerie</h2>
 
         <p style="font-size:18px;">
             Trésorerie actuelle : <strong>${treso.toLocaleString()} Ø</strong>
@@ -25,7 +43,7 @@ function afficherTresorerie() {
             Bénéfice hebdomadaire (avant impôts) : <strong>${benefHebdo.toLocaleString()} Ø</strong>
         </p>
 
-        <h3>Marketing</h3>
+        <h3 style="color:#00aaff;">Marketing</h3>
 
         <p>
             Clients : <span class="point-marketing point-${marketing.couleur}"></span>
@@ -33,26 +51,59 @@ function afficherTresorerie() {
 
         <label>Budget marketing journalier :</label>
         <input type="number" id="inputMarketing" value="${marketing.budgetJournalier}" style="width:150px;">
-        <button onclick="changerBudgetMarketing()">Valider</button>
+        <button onclick="ge_changerBudgetMarketing()">Valider</button>
+
+        <h3 style="margin-top:25px; color:#00aaff;">Primes</h3>
+
+        <div>
+            <label>Montant :</label>
+            <input type="number" id="prime-montant" style="width:120px;">
+        </div>
+
+        <div style="margin-top:10px;">
+            <label>Cible :</label>
+            <select id="prime-cible" onchange="ge_mettreAJourListeCibles()">
+                <option value="joueur">Joueur</option>
+                <option value="entreprise">Entreprise</option>
+                <option value="holding">Holding</option>
+                <option value="conglomerat">Conglomérat</option>
+            </select>
+        </div>
+
+        <select id="prime-cible-liste" style="display:none; margin-top:10px;"></select>
+
+        <button style="margin-top:10px;" onclick="ge_validerPrime()">Valider la prime</button>
+
+        <h3 style="margin-top:25px; color:#00aaff;">Historique des primes</h3>
+        <div id="historique-primes" style="max-height:200px; overflow-y:auto;"></div>
     `;
 }
 
-function changerBudgetMarketing() {
+
+// ===============================
+// CHANGEMENT BUDGET MARKETING
+// ===============================
+
+function ge_changerBudgetMarketing() {
     const val = parseInt(document.getElementById("inputMarketing").value);
     if (isNaN(val) || val < 0) return;
 
     marketing.budgetJournalier = val;
     mettreAJourMarketing();
-    afficherTresorerie();
+    ge_afficherTresorerie();
 }
 
-// Chargement automatique
-afficherTresorerie();
+
+// ===============================
+// PRIMES
+// ===============================
+
 let historiquePrimes = [];
 
 function ge_validerPrime() {
     const montant = parseInt(document.getElementById("prime-montant").value, 10);
-    const cible = document.getElementById("prime-cible").value;
+    const type = document.getElementById("prime-cible").value;
+    const liste = document.getElementById("prime-cible-liste");
 
     if (isNaN(montant) || montant <= 0) {
         alert("Montant invalide.");
@@ -61,41 +112,30 @@ function ge_validerPrime() {
 
     let message = "";
 
-    switch (cible) {
-        case "joueur":
-            tresorerie -= montant;
-            message = `Prime de ${montant}€ versée au joueur.`;
-            break;
+    // Cible joueur
+    if (type === "joueur") {
+        entreprise.tresorerie -= montant;
+        message = `Prime de ${montant.toLocaleString()} Ø versée au joueur.`;
+    }
 
-        case "entreprise":
-            if (entreprises.length === 0) {
-                alert("Aucune entreprise disponible.");
-                return;
-            }
-            entreprises[0].tresorerie += montant;
-            tresorerie -= montant;
-            message = `Prime de ${montant}€ versée à l'entreprise ${entreprises[0].nom}.`;
-            break;
+    // Cible entreprise / holding / conglomérat
+    else {
+        const id = liste.value;
+        let cibleObj = null;
 
-        case "holding":
-            if (holdings.length === 0) {
-                alert("Aucune holding disponible.");
-                return;
-            }
-            holdings[0].tresorerie += montant;
-            tresorerie -= montant;
-            message = `Prime de ${montant}€ versée à la holding ${holdings[0].nom}.`;
-            break;
+        if (type === "entreprise") cibleObj = entreprises.find(e => e.id == id);
+        if (type === "holding") cibleObj = holdings.find(h => h.id == id);
+        if (type === "conglomerat") cibleObj = conglomerats.find(c => c.id == id);
 
-        case "conglomerat":
-            if (conglomerats.length === 0) {
-                alert("Aucun conglomérat disponible.");
-                return;
-            }
-            conglomerats[0].tresorerie += montant;
-            tresorerie -= montant;
-            message = `Prime de ${montant}€ versée au conglomérat ${conglomerats[0].nom}.`;
-            break;
+        if (!cibleObj) {
+            alert("Cible introuvable.");
+            return;
+        }
+
+        cibleObj.tresorerie = (cibleObj.tresorerie || 0) + montant;
+        entreprise.tresorerie -= montant;
+
+        message = `Prime de ${montant.toLocaleString()} Ø versée à ${cibleObj.nom}.`;
     }
 
     historiquePrimes.push(message);
@@ -103,15 +143,27 @@ function ge_validerPrime() {
     ge_afficherTresorerie();
 }
 
+
+// ===============================
+// HISTORIQUE DES PRIMES
+// ===============================
+
 function ge_afficherHistoriquePrimes() {
     const zone = document.getElementById("historique-primes");
+    if (!zone) return;
+
     zone.innerHTML = historiquePrimes.map(l => `<div>• ${l}</div>`).join("");
 }
+
+
+// ===============================
+// LISTE DES CIBLES
+// ===============================
+
 function ge_mettreAJourListeCibles() {
     const type = document.getElementById("prime-cible").value;
     const liste = document.getElementById("prime-cible-liste");
 
-    // Réinitialisation
     liste.innerHTML = "";
     liste.style.display = "none";
 
@@ -121,11 +173,8 @@ function ge_mettreAJourListeCibles() {
     if (type === "holding") source = holdings;
     if (type === "conglomerat") source = conglomerats;
 
-    if (source.length === 0 || type === "joueur") {
-        return; // rien à afficher
-    }
+    if (source.length === 0 || type === "joueur") return;
 
-    // Affiche la liste
     liste.style.display = "block";
 
     source.forEach(obj => {
@@ -135,3 +184,10 @@ function ge_mettreAJourListeCibles() {
         liste.appendChild(opt);
     });
 }
+
+
+// ===============================
+// CHARGEMENT AUTOMATIQUE
+// ===============================
+
+ge_afficherTresorerie();

@@ -1,57 +1,99 @@
 // ===============================
-// UI : AFFICHAGE DES STRUCTURES
+// UI : AFFICHAGE DES STRUCTURES GEO EMPIRE
+// ===============================
+//
+// Affiche :
+// - Entreprises
+// - Holdings
+// - Conglomérats
+//
+// Style bleu-néon cohérent avec l'interface Geo Empire.
+// ===============================
+
+
+// ===============================
+// TABLE ENTREPRISES
 // ===============================
 
 function ge_ui_tableEnterprises() {
-    let html = `<h3>Entreprises</h3>`;
+    let html = `<h2 style="color:#00aaff; margin-bottom:10px;">Entreprises</h2>`;
 
-    if (entreprises.length === 0) {
-        html += `<p>Aucune entreprise.</p>`;
+    if (!entreprises || entreprises.length === 0) {
+        html += `<p>Aucune entreprise enregistrée.</p>`;
         return html;
     }
 
-    html += `<ul>`;
-    entreprises.forEach(e => {
-        html += `<li>${e.nom} — Trésorerie : ${e.tresorerie.toLocaleString()} €</li>`;
-    });
-    html += `</ul>`;
+    html += `<div class="ge-list">`;
 
+    entreprises.forEach(e => {
+        html += `
+            <div class="ge-item">
+                <strong>${e.nom}</strong><br>
+                Trésorerie : <span style="color:#00ffaa;">${e.tresorerie.toLocaleString()} Ø</span>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
     return html;
 }
+
+
+// ===============================
+// TABLE HOLDINGS
+// ===============================
 
 function ge_ui_tableHoldings() {
-    let html = `<h3>Holdings</h3>`;
+    let html = `<h2 style="color:#00aaff; margin-top:25px; margin-bottom:10px;">Holdings</h2>`;
 
-    if (holdings.length === 0) {
-        html += `<p>Aucune holding.</p>`;
+    if (!holdings || holdings.length === 0) {
+        html += `<p>Aucune holding enregistrée.</p>`;
         return html;
     }
 
-    html += `<ul>`;
-    holdings.forEach(h => {
-        html += `<li>${h.nom} — Trésorerie : ${h.tresorerie.toLocaleString()} €</li>`;
-    });
-    html += `</ul>`;
+    html += `<div class="ge-list">`;
 
+    holdings.forEach(h => {
+        html += `
+            <div class="ge-item">
+                <strong>${h.nom}</strong><br>
+                Trésorerie : <span style="color:#00ffaa;">${h.tresorerie.toLocaleString()} Ø</span>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
     return html;
 }
+
+
+// ===============================
+// TABLE CONGLOMÉRATS
+// ===============================
 
 function ge_ui_tableConglomerats() {
-    let html = `<h3>Conglomérats</h3>`;
+    let html = `<h2 style="color:#00aaff; margin-top:25px; margin-bottom:10px;">Conglomérats</h2>`;
 
-    if (conglomerats.length === 0) {
-        html += `<p>Aucun conglomérat.</p>`;
+    if (!conglomerats || conglomerats.length === 0) {
+        html += `<p>Aucun conglomérat enregistré.</p>`;
         return html;
     }
 
-    html += `<ul>`;
-    conglomerats.forEach(c => {
-        html += `<li>${c.nom} — Trésorerie : ${c.tresorerie.toLocaleString()} €</li>`;
-    });
-    html += `</ul>`;
+    html += `<div class="ge-list">`;
 
+    conglomerats.forEach(c => {
+        html += `
+            <div class="ge-item">
+                <strong>${c.nom}</strong><br>
+                Trésorerie : <span style="color:#00ffaa;">${c.tresorerie.toLocaleString()} Ø</span>
+            </div>
+        `;
+    });
+
+    html += `</div>`;
     return html;
 }
+
 
 // ===============================
 // AFFICHAGE GLOBAL

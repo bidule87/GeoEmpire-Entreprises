@@ -1,32 +1,32 @@
-import { calculerPatrimoine, tauxGToken } from "./systeme/systeme_patrimoine.js";
-import { definirPrime, transfertPrimesMinuit } from "./systeme/systeme_primes.js";
-import { injecterGToken } from "./systeme/systeme_gtoken.js";
-import { recruterRole } from "./systeme/systeme_roles.js";
-import { creerFiliale } from "./systeme/systeme_actionnaires.js";
+// ===============================
+// IMPORTS MODULES SYSTEME (VERSION PRO)
+// ===============================
+import { ge_calculerPatrimoine, ge_tauxGToken, ge_limitePrime } from "./entreprise/systeme_patrimoine.js";
+import { ge_definirPrime, ge_transfertPrimesMinuit } from "./entreprise/systeme_primes.js";
+import { ge_injecterGToken } from "./entreprise/systeme_gtoken.js";
+import { ge_recruterRole, ge_peutFaire } from "./entreprise/systeme_roles.js";
+import { ge_creerFilialeAvecActionnaires, ge_distribuerGTokens } from "./entreprise/systeme_actionnaires.js";
+
 
 // ===============================
 // SYSTEME ECONOMIQUE GEO EMPIRE
 // ===============================
 
-// État global entreprise
 const entreprise = {
     apportInitial: 0,
     tresorerie: 0,
     valeurBiens: 0,
     prestige: false,
+    autoManager: false,
     beneficeSemaine: 0
 };
 
-// Marketing / clients fictifs
 const marketing = {
     budgetJournalier: 0,
     couleur: "rouge"
 };
 
-// Biens disponibles (IA)
 let biensDisponibles = [];
-
-// Biens possédés
 let biensPossedes = [];
 
 
@@ -35,6 +35,15 @@ let biensPossedes = [];
 // ===============================
 function randomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+
+// ===============================
+// BONUS PRESTIGE (MANQUANT DANS TON CODE)
+// ===============================
+function bonusPrestigeValeur(bien, net) {
+    if (!entreprise.prestige) return net;
+    return Math.round(net * 1.15); // +15% de rentabilité
 }
 
 
@@ -65,8 +74,6 @@ function genererBienIA() {
         disponibilite: randomInt(10, 500),
         assure: false,
         assurance: null,
-assurance: null,
-
         rentabilite: 0
     };
 }
@@ -91,7 +98,7 @@ function genererBiensPourCategorie() {
 function calculerRentabilite(bien) {
     const net = bien.loyer - bien.charges - bien.impots;
     const netPrestige = bonusPrestigeValeur(bien, net);
-    return net / bien.prixAchat;
+    return netPrestige / bien.prixAchat;
 }
 
 function valeurTotaleBiens() {
@@ -107,7 +114,7 @@ function peutAcheter(bien) {
 
 
 // ===============================
-// MARKETING (COULEURS)
+// MARKETING
 // ===============================
 function estimerGainJournalier() {
     return biensPossedes.reduce((sum, b) => {
@@ -117,6 +124,12 @@ function estimerGainJournalier() {
 }
 
 function mettreAJourMarketing() {
+
+    // AUTO-MANAGER : marketing automatique
+    if (entreprise.autoManager) {
+        marketing.budgetJournalier = Math.round(entreprise.tresorerie * 0.02);
+    }
+
     const gain = estimerGainJournalier();
     if (gain <= 0) {
         marketing.couleur = "rouge";
@@ -143,12 +156,11 @@ function probaVenteLocation() {
         case "bleu": return 0.95;
         default: return 0.10;
     }
-    return bonusPrestigeVenteLocation(base);
 }
 
 
 // ===============================
-// ASSURANCE UNIQUE
+// ASSURANCE
 // ===============================
 function assurerBien(bien, coutAssurance) {
     if (bien.assure) return true;
@@ -161,9 +173,15 @@ function assurerBien(bien, coutAssurance) {
 
 
 // ===============================
-// ACHAT
+// ACHAT (AVEC PERMISSIONS)
 // ===============================
-function acheterBien(bien, coutAssurance) {
+function acheterBien(bien, coutAssurance, role) {
+
+    if (!ge_peutFaire(role, "acheter")) {
+        alert("Vous n'avez pas la permission d'acheter.");
+        return false;
+    }
+
     if (!peutAcheter(bien)) return false;
     if (!assurerBien(bien, coutAssurance)) return false;
 
@@ -171,6 +189,7 @@ function acheterBien(bien, coutAssurance) {
     biensPossedes.push(bien);
     biensDisponibles = biensDisponibles.filter(b => b.id !== bien.id);
     entreprise.valeurBiens = valeurTotaleBiens();
+
     return true;
 }
 
@@ -197,7 +216,7 @@ function traiterLocationsEtVentesMinuit() {
 
 
 // ===============================
-// IMPOTS LE DIMANCHE SOIR
+// IMPOTS HEBDOMADAIRES
 // ===============================
 function appliquerImpotsHebdo(tauxImpots = 0.25) {
     if (entreprise.beneficeSemaine <= 0) {
@@ -209,4 +228,3 @@ function appliquerImpotsHebdo(tauxImpots = 0.25) {
     entreprise.tresorerie -= impots;
     entreprise.beneficeSemaine = 0;
 }
-window.open("debug.html", "_blank");
