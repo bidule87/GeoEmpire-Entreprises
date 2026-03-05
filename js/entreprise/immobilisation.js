@@ -1,102 +1,139 @@
 // ===============================
-// CATALOGUE GLOBAL DES BIENS (IA PERSISTANTE)
+// IMMOBILISATIONS — ULTRA PRO
 // ===============================
 //
-// Le catalogue est global : tous les joueurs voient les mêmes biens.
-// L’IA regénère automatiquement quand une catégorie est vide.
-//
-
-let catalogueGlobal = {
-    residentiel: [],
-    commercial: [],
-    industriel: [],
-    transport: [],
-    zones: [],
-    spatial: []
-};
+// Compatible avec :
+// - systeme.js (biensDisponibles, biensPossedes, acheterBien, etc.)
+// - entreprises.js (valeurTotaleBiens, estimerGainJournalier)
+// - systeme_roles.js (ge_peutFaire)
+// - Navigation PRO (ge_naviguer)
+// ===============================
 
 
 // ===============================
-// IA DE GÉNÉRATION DE BIENS
+// UI PRINCIPALE
 // ===============================
 
-function genererBienAleatoire(type) {
-    const basePrix = {
-        residentiel: 80_000,
-        commercial: 250_000,
-        industriel: 600_000,
-        transport: 1_200_000,
-        zones: 3_000_000,
-        spatial: 25_000_000
-    };
+export function afficherImmobilisations() {
+    const cont = document.getElementById("contenu-immobilisations");
+    if (!cont) return;
 
-    const prix = basePrix[type] + Math.floor(Math.random() * basePrix[type] * 1.5);
+    // Génération IA si catalogue vide
+    if (biensDisponibles.length === 0) {
+        genererBiensPourCategorie();
+    }
 
-    return {
-        id: type + "_" + Math.random().toString(36).substring(2, 9),
-        type: type.charAt(0).toUpperCase() + type.slice(1),
-        prixAchat: prix,
-        loyer: Math.floor(prix * 0.008),
-        charges: Math.floor(prix * 0.0015),
-        impots: Math.floor(prix * 0.001),
-        disponibilite: "Oui",
-        rentabilite: "Variable"
-    };
-}
+    const role = joueur?.role || "Aucun rôle";
+    const valeurBiens = valeurTotaleBiens();
+    const gainJour = estimerGainJournalier();
 
+    let html = `
+        <h2 style="color:#00aaff; text-shadow:0 0 8px #0077cc;">Immobilisations</h2>
 
-// ===============================
-// GÉNÉRATION INITIALE (20–25 biens par catégorie)
-// ===============================
+        <p><strong>Rôle :</strong> ${role}</p>
+        <p><strong>Valeur totale des biens :</strong> ${valeurBiens.toLocaleString()} Ø</p>
+        <p><strong>Gain journalier estimé :</strong> ${gainJour.toLocaleString()} Ø</p>
 
-function initialiserCatalogue() {
-    const categories = Object.keys(catalogueGlobal);
+        <hr style="border-color:#004466; margin:15px 0;">
+    `;
 
-    categories.forEach(cat => {
-        if (catalogueGlobal[cat].length < 20) {
-            for (let i = 0; i < 25; i++) {
-                catalogueGlobal[cat].push(genererBienAleatoire(cat));
-            }
-        }
+    // ===============================
+    // BIENS POSSÉDÉS
+    // ===============================
+
+    html += `<h3 style="color:#00aaff;">Biens possédés</h3>`;
+
+    if (biensPossedes.length === 0) {
+        html += `<p>Aucun bien pour le moment.</p>`;
+    } else {
+        html += `
+            <table style="width:100%; border-collapse:collapse; margin-bottom:20px;">
+                <tr style="background:#003355; color:white;">
+                    <th style="padding:8px;">Catégorie</th>
+                    <th style="padding:8px;">Type</th>
+                    <th style="padding:8px;">Valeur</th>
+                    <th style="padding:8px;">Loyer net</th>
+                    <th style="padding:8px;">Assuré</th>
+                    <th style="padding:8px;">Action</th>
+                </tr>
+        `;
+
+        biensPossedes.forEach(bien => {
+            const net = bien.loyer - bien.charges - bien.impots;
+
+            html += `
+                <tr style="background:#001a33; color:#ddd;">
+                    <td style="padding:8px;">${bien.categorie}</td>
+                    <td style="padding:8px;">${bien.type}</td>
+                    <td style="padding:8px;">${bien.prixAchat.toLocaleString()} Ø</td>
+                    <td style="padding:8px;">${net.toLocaleString()} Ø</td>
+                    <td style="padding:8px;">${bien.assure ? "Oui" : "Non"}</td>
+                    <td style="padding:8px;">
+                        ${ge_peutFaire(role, "vendre") ? `<button onclick="ge_vendreBien('${bien.id}')">Vendre</button>` : ""}
+                    </td>
+                </tr>
+            `;
+        });
+
+        html += `</table>`;
+    }
+
+    // ===============================
+    // CATALOGUE IA (50 biens)
+    // ===============================
+
+    html += `
+        <hr style="border-color:#004466; margin:15px 0;">
+        <h3 style="color:#00aaff;">Catalogue des biens disponibles</h3>
+        <p style="font-size:0.9em; color:#aaa;">L’IA génère automatiquement les biens. 50 par vague.</p>
+
+        <table style="width:100%; border-collapse:collapse;">
+            <tr style="background:#003355; color:white;">
+                <th style="padding:8px;">Catégorie</th>
+                <th style="padding:8px;">Type</th>
+                <th style="padding:8px;">Prix</th>
+                <th style="padding:8px;">Loyer</th>
+                <th style="padding:8px;">Charges</th>
+                <th style="padding:8px;">Impôts</th>
+                <th style="padding:8px;">Action</th>
+            </tr>
+    `;
+
+    biensDisponibles.slice(0, 50).forEach(bien => {
+        html += `
+            <tr style="background:#001a33; color:#ddd;">
+                <td style="padding:8px;">${bien.categorie}</td>
+                <td style="padding:8px;">${bien.type}</td>
+                <td style="padding:8px;">${bien.prixAchat.toLocaleString()} Ø</td>
+                <td style="padding:8px;">${bien.loyer.toLocaleString()} Ø</td>
+                <td style="padding:8px;">${bien.charges.toLocaleString()} Ø</td>
+                <td style="padding:8px;">${bien.impots.toLocaleString()} Ø</td>
+                <td style="padding:8px;">
+                    <button onclick="ge_uiAcheterBien('${bien.id}')">Acheter</button>
+                </td>
+            </tr>
+        `;
     });
+
+    html += `</table>`;
+
+    cont.innerHTML = html;
 }
 
-initialiserCatalogue();
-
 
 // ===============================
-// ACHAT D’UN BIEN
+// ACTION ACHAT
 // ===============================
 
-function actionAcheterBien(id) {
-    const toutesCategories = Object.values(catalogueGlobal).flat();
-    const bien = toutesCategories.find(b => b.id === id);
+export function ge_uiAcheterBien(idBien) {
+    const bien = biensDisponibles.find(b => b.id === idBien);
     if (!bien) return;
 
-    // Vérification du rôle
-    const role = joueur.role;
-    const rolesAutorises = ["PDG", "Directeur Général", "Directeur Commercial", "Comptable"];
+    const role = joueur?.role || "Aucun rôle";
+    const coutAssurance = Math.round(bien.prixAchat * 0.01);
 
-    if (!rolesAutorises.includes(role)) {
-        alert("Vous n'avez pas les droits pour acheter un bien.");
-        return;
-    }
-
-    // Vérification trésorerie entreprise
-    if (entreprise.tresorerie < bien.prixAchat) {
-        alert("Trésorerie insuffisante.");
-        return;
-    }
-
-    entreprise.tresorerie -= bien.prixAchat;
-
-    if (!entreprise.biens) entreprise.biens = [];
-    entreprise.biens.push(bien);
-
-    // Suppression du catalogue
-    Object.keys(catalogueGlobal).forEach(cat => {
-        catalogueGlobal[cat] = catalogueGlobal[cat].filter(x => x.id !== id);
-    });
+    const ok = acheterBien(bien, coutAssurance, role);
+    if (!ok) return;
 
     alert("Bien acheté avec succès !");
     afficherImmobilisations();
@@ -104,48 +141,34 @@ function actionAcheterBien(id) {
 
 
 // ===============================
-// AFFICHAGE DU CATALOGUE
+// ACTION VENTE (ULTRA PRO)
 // ===============================
 
-function afficherImmobilisations() {
-    const cont = document.getElementById("contenu-immobilisation");
-    if (!cont) return;
+export function ge_vendreBien(idBien) {
+    const bien = biensPossedes.find(b => b.id === idBien);
+    if (!bien) return;
 
-    let html = `
-        <h2 style="color:#00aaff; text-shadow:0 0 8px #0077cc;">Catalogue des biens</h2>
-    `;
+    const role = joueur?.role || "Aucun rôle";
 
-    Object.keys(catalogueGlobal).forEach(cat => {
-        html += `
-            <h3 style="color:#00aaff; margin-top:25px;">${cat.toUpperCase()}</h3>
-            <table style="width:100%; border-collapse:collapse;">
-                <tr style="background:#003355; color:white;">
-                    <th style="padding:8px;">Type</th>
-                    <th style="padding:8px;">Prix</th>
-                    <th style="padding:8px;">Loyer</th>
-                    <th style="padding:8px;">Charges</th>
-                    <th style="padding:8px;">Impôts</th>
-                    <th style="padding:8px;">Acheter</th>
-                </tr>
-        `;
+    if (!ge_peutFaire(role, "vendre")) {
+        alert("Vous n'avez pas la permission de vendre.");
+        return;
+    }
 
-        catalogueGlobal[cat].forEach(bien => {
-            html += `
-                <tr style="background:#001a33; color:#ddd;">
-                    <td style="padding:8px;">${bien.type}</td>
-                    <td style="padding:8px;">${bien.prixAchat.toLocaleString()} Ø</td>
-                    <td style="padding:8px;">${bien.loyer.toLocaleString()} Ø</td>
-                    <td style="padding:8px;">${bien.charges.toLocaleString()} Ø</td>
-                    <td style="padding:8px;">${bien.impots.toLocaleString()} Ø</td>
-                    <td style="padding:8px;">
-                        <button onclick="actionAcheterBien('${bien.id}')" style="padding:5px;">Acheter</button>
-                    </td>
-                </tr>
-            `;
-        });
+    const prixVente = Math.round(bien.prixAchat * 0.85);
 
-        html += `</table>`;
-    });
+    entreprise.tresorerie += prixVente;
+    biensPossedes = biensPossedes.filter(b => b.id !== idBien);
 
-    cont.innerHTML = html;
+    alert(`Bien vendu pour ${prixVente.toLocaleString()} Ø`);
+    afficherImmobilisations();
 }
+
+
+// ===============================
+// EXPORT GLOBAL POUR NAVIGATION
+// ===============================
+
+window.afficherImmobilisations = afficherImmobilisations;
+window.ge_uiAcheterBien = ge_uiAcheterBien;
+window.ge_vendreBien = ge_vendreBien;

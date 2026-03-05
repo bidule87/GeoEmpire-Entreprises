@@ -7,8 +7,7 @@
 // - Directeur Général
 // - Directeur Commercial
 // - Comptable
-//
-// Chaque rôle donne accès à certaines actions.
+// - Actionnaire (mêmes droits que PDG)
 // ===============================
 
 
@@ -18,9 +17,12 @@
 
 const GE_PERMISSIONS = {
     PDG: ["acheter", "vendre", "louer", "assurer", "marketing", "gtoken", "actionnaires"],
+    Comptable: ["acheter", "vendre", "louer", "assurer", "marketing", "gtoken", "actionnaires"],
+    Actionnaire: ["acheter", "vendre", "louer", "assurer", "marketing", "gtoken", "actionnaires"],
+
     DirecteurGeneral: ["acheter", "vendre", "louer", "assurer"],
-    DirecteurCommercial: ["vendre", "louer"],
-    Comptable: ["acheter", "vendre", "louer", "assurer", "marketing", "gtoken", "actionnaires"]
+
+    DirecteurCommercial: ["vendre", "louer", "assurer"]
 };
 
 
@@ -44,7 +46,8 @@ function ge_recruterRole(entreprise, role, joueur) {
             PDG: null,
             DirecteurGeneral: null,
             DirecteurCommercial: null,
-            Comptable: null
+            Comptable: null,
+            Actionnaire: null
         };
     }
 

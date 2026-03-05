@@ -4,24 +4,28 @@
 //
 // Gère l'affichage des différentes sections du jeu :
 // - Trésorerie
+// - Dashboard
 // - Entreprises
 // - Holdings
 // - Conglomérats
 // - Rôles
 // - Boutique
 // - Loterie
+// - Immobilisations (NOUVEAU)
 // ===============================
 
 
 // Liste des pages disponibles
 const GE_PAGES = {
     tresorerie: "contenu-tresorerie",
+    dashboard: "contenu-dashboard",
     entreprises: "contenu-entreprises",
     holdings: "contenu-holdings",
     conglom: "contenu-conglom",
     roles: "contenu-roles",
     boutique: "contenu-boutique",
-    loterie: "contenu-loterie"
+    loterie: "contenu-loterie",
+    immobilisations: "contenu-immobilisations"   // ← AJOUT OFFICIEL
 };
 
 
@@ -50,8 +54,13 @@ function ge_afficherPage(page) {
 
     // Chargement automatique des modules
     switch (page) {
+
         case "tresorerie":
             ge_afficherTresorerie();
+            break;
+
+        case "dashboard":
+            if (typeof ge_afficherDashboard === "function") ge_afficherDashboard();
             break;
 
         case "entreprises":
@@ -68,6 +77,12 @@ function ge_afficherPage(page) {
 
         case "loterie":
             if (typeof ge_afficherLoterie === "function") ge_afficherLoterie();
+            break;
+
+        case "immobilisations":                     // ← AJOUT OFFICIEL
+            if (typeof afficherImmobilisations === "function") {
+                afficherImmobilisations();
+            }
             break;
     }
 }
